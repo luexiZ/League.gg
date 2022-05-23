@@ -20,13 +20,15 @@ public class LeagueOfLegendsClient {
     public String getID(String name){
         name = fixName(name);
         String endPoint = "/summoner/v4/summoners/by-name/" + name;
-        String url = baseUrl + endPoint + "?api_key=" + APIkey;
+       // String url = baseUrl + endPoint + "?api_key=" + APIkey;
+        String url = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/KIMily66666?api_key=RGAPI-76a91ed0-ba79-4675-bc95-640a30c8cec1";
         JSONObject jsonObject = new JSONObject(makeAPICall(url));
         return jsonObject.getString("id");
     }
 
 
-    public ArrayList<Champion> parseJSONChampion(String summonerID){
+    public ArrayList<Champion> parseJSONChampion(String name){
+        String summonerID = getID(name);
         String endPoint = "/champion-mastery/v4/champion-masteries/by-summoner/" + summonerID;
         String url = baseUrl + endPoint + "?api_key=" + APIkey;
         String response = makeAPICall(url);
@@ -36,28 +38,31 @@ public class LeagueOfLegendsClient {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             int id = jsonObject.getInt("championId");
             int points = jsonObject.getInt("championPointsSinceLastLevel");
-            String name = "";
+            String championName = "";
             String pictureURL = "";
 
             JSONObject jsonChamp = new JSONObject(makeAPICall("http://ddragon.leagueoflegends.com/cdn/12.9.1/data/en_US/champion.json"));
             JSONObject data = jsonChamp.getJSONObject("data");
-            Iterator x = data.keys();
-            JSONArray jsonArray1 = new JSONArray();
-            while (x.hasNext()){
-                String key = (String)x.next();
-                jsonArray.put(data.get(key));
-            }
-            for(int j = 0; j < jsonArray1.length(); j++){
-                if(jsonArray1.getJSONObject(j).getInt("key") == id){
-                    name = jsonArray1.getJSONObject(j).getString("id");
-                    pictureURL = "http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/" + name + ".png";
+            Iterator<String> keys = data.keys();
+
+            while(keys.hasNext()) {
+                String key = keys.next();
+                if (data.get(key) instanceof JSONObject) {
+                    JSONObject character = data.getJSONObject(key);
+                    int idInList = character.getInt("key");
+                    if(idInList == id){
+                        championName = character.getString("id");
+                        pictureURL = "http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/" + name + ".png";
+                    }
+
                 }
             }
-            Champion champion = new Champion(name, pictureURL, points);
+            Champion champion = new Champion(championName, pictureURL, points);
             list.add(champion);
         }
         return list;
     }
+
 
     public Player getPlayer(String name){
         String summonerID = getID(name);
@@ -147,6 +152,7 @@ public class LeagueOfLegendsClient {
         }
         return topPlayers;
     }
+
 
 
 }

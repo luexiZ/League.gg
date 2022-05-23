@@ -84,6 +84,7 @@ public class GUIController implements ActionListener
 
 
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton) (e.getSource());
@@ -105,12 +106,14 @@ public class GUIController implements ActionListener
     public void displayInfo(String Username) // call this method when submit is click ; add PARAMETERS !
     {
         results = client.getPlayer(Username);
+        ArrayList<Champion> bob = results.getMostPlayed();
         String Champ = "";
-
+//
         for(int i = 0; i < 3; i++){
-            String name = results.getMostPlayed().get(i).getName();
+            String name = bob.get(i).getName();
             Champ += name + " ";
         }
+
     Top1_5.setText("<html> Rank" +  results.getSoloRank() + " <br> Solo Win Rate: " +  results.getSoloWinRate() + "<br>FLEX: " + results.getFlexRank()+ "<br>FlexWinRate :"+ results.getFlexWinRate() + "<br>MostPlayed:" + Champ + "<html>");
 
 
