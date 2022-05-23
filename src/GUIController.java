@@ -33,7 +33,9 @@ public class GUIController implements ActionListener
     public void screenGUI()
     {
         JFrame frame = new JFrame("League.GG");
+        frame.setPreferredSize( new Dimension(500, 220));
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+
 
         JPanel searchPanel = new JPanel();
 
@@ -54,26 +56,24 @@ public class GUIController implements ActionListener
         title.add(titleLabel);
 
 
-        Top1_5 = new JLabel(); // api top 1 - 5
-        Top6_10 = new JLabel(); //api top 6 - 10
-
         JPanel topPlayers = new JPanel();
         GridLayout layout = new GridLayout(1,2);
         topPlayers.setLayout(layout);
         layout.setHgap(10);
-        JLabel demo = new JLabel("<html>1.  <br> 2. Quntao Zheng <br> 3. Qihong , <br> 4. player4 <br> 5. player5 <html>");
-        demo.setHorizontalAlignment(SwingConstants.CENTER);
-        JLabel demo2 = new JLabel("<html>6. <br> player6 <br> 7. player7 <br> 8. player8 <br> 9. player9 <br> 10. player10 <br> <html>");
-        demo2.setHorizontalAlignment(SwingConstants.CENTER);
-        topPlayers.add(demo);
-        topPlayers.add(demo2);
+        Top1_5 = new JLabel("<html>1.  <br> 2. Quntao Zheng <br> 3. Qihong , <br> 4. player4 <br> 5. player5 <html>");
+        Top1_5.setHorizontalAlignment(SwingConstants.CENTER);
+        Top6_10 = new JLabel("<html>6. <br> player6 <br> 7. player7 <br> 8. player8 <br> 9. player9 <br> 10. player10 <br> <html>");
+        Top6_10.setHorizontalAlignment(SwingConstants.CENTER);
 
-        JPanel playerInfo = new JPanel();
+
+        topPlayers.add(Top1_5);
+        topPlayers.add(Top6_10);
 
 
         frame.add(searchPanel, BorderLayout.NORTH);
-        frame.add(topPlayers, BorderLayout.SOUTH);
         frame.add(title, BorderLayout.CENTER);
+        frame.add(topPlayers, BorderLayout.SOUTH);
+
 
         submit.addActionListener(this);
         clear.addActionListener(this);
@@ -81,6 +81,7 @@ public class GUIController implements ActionListener
         frame.pack();
         frame.setVisible(true);
     }
+
 
 
 
@@ -105,11 +106,17 @@ public class GUIController implements ActionListener
     public void displayInfo(String Username) // call this method when submit is click ; add PARAMETERS !
     {
         results = client.getPlayer(Username);
-    Top1_5.setText(""+
-    results.getSoloRank());
-//    results.getSoloWinRate()+
-//    results.getFlexRank()+
-//    results.getFlexWinRate() +
-//    results.getMostPlayed());
+        ArrayList<Champion> bob = results.getMostPlayed();
+        String Champ = "";
+//
+        for(int i = 0; i < 3; i++){
+            String name = bob.get(i).getName();
+            Champ += name + " ";
+        }
+
+    Top1_5.setText("<html> Rank" +  results.getSoloRank() + " <br> Solo Win Rate: " +  results.getSoloWinRate() + "<br>FLEX: " + results.getFlexRank()+ "<br>FlexWinRate :"+ results.getFlexWinRate() + "<br>MostPlayed:" + Champ + "<html>");
+
+
+
     }
 }
