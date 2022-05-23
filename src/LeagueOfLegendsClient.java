@@ -13,7 +13,7 @@ public class LeagueOfLegendsClient {
     private String baseUrl;
 
     public LeagueOfLegendsClient(){
-        APIkey = "RGAPI-4cf8c2a5-ef4d-42de-9075-e22a7384bca0";
+        APIkey = "RGAPI-76a91ed0-ba79-4675-bc95-640a30c8cec1";
         baseUrl = "https://na1.api.riotgames.com/lol";
     }
 
@@ -69,8 +69,20 @@ public class LeagueOfLegendsClient {
         double soloWinRate;
         double flexWinRate;
         JSONArray jsonArray = new JSONArray(makeAPICall(url));
-        JSONObject solo = jsonArray.getJSONObject(1);
-        JSONObject flex = jsonArray.getJSONObject(0);
+        JSONObject solo = null;
+        JSONObject flex = null;
+        for(int i = 0; i < 3; i++)
+        {
+            if(jsonArray.getJSONObject(i).getString("queueType").equals("RANKED_SOLO_5x5"))
+            {
+                 solo = jsonArray.getJSONObject(i);
+            }
+            if(jsonArray.getJSONObject(i).getString("queueType").equals("RANKED_FLEX_SR"))
+            {
+                 flex = jsonArray.getJSONObject(i);
+            }
+        }
+
         soloRank = solo.getString("tier") + " " + solo.getString("rank") + " " + solo.getInt("leaguePoints");
         flexRank = flex.getString("tier") + " " + flex.getString("rank") + " " + flex.getInt("leaguePoints");
         soloWinRate = (double)solo.getInt("wins") / (solo.getInt("wins") + solo.getInt("losses"));
@@ -106,8 +118,34 @@ public class LeagueOfLegendsClient {
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
+
             return null;
         }
+    }
+
+    public ArrayList<String> parseTopPlayers() {
+        String endPoint = "/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5";
+        String url = baseUrl + endPoint + "?api_key=" + APIkey;
+        String response = makeAPICall(url);
+
+        ArrayList<String> topPlayers = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject(response);
+        JSONArray players = jsonObject.getJSONArray("entries");
+        JSONObject player = null;
+        int highestIdx = 0;
+        for (int i = 0; i < 10; i++) {
+            JSONObject highest = players.getJSONObject(0);
+            for (int j = 1; j < players.length(); j++) {
+                player = players.getJSONObject(j);
+                if (player.getInt("leaguePoints") > highest.getInt("leaguePoints")) {
+                    highest = player;
+                    highestIdx = j;
+                }
+            }
+            topPlayers.add(highest.getString("summonerName"));
+            players.remove(highestIdx);
+        }
+        return topPlayers;
     }
 
 
