@@ -4,11 +4,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 
 // DAILY NOTICE: The following code is only to test JPanel format in GUI, no improve.
 public class GUIController implements ActionListener
@@ -106,17 +106,35 @@ public class GUIController implements ActionListener
     public void displayInfo(String Username) // call this method when submit is click ; add PARAMETERS !
     {
         results = client.getPlayer(Username);
-        ArrayList<Champion> bob = results.getMostPlayed();
-        String Champ = "";
-//
-        for(int i = 0; i < 3; i++){
-            String name = bob.get(i).getName();
-            Champ += name + " ";
+        ArrayList<Champion> championList = results.getMostPlayed();
+
+        Top1_5.setText("<html> Solo Rank: " + results.getSoloRank() + " <br> Solo Win Rate: " +  winRate(results.getSoloWinRate()) + "<br>Flex Rank: " + results.getFlexRank()+ "<br>Flex WinRate: "+ winRate(results.getFlexWinRate()) + "<br> <html>");
+        Champion champ1 = results.getMostPlayed().get(0);
+        Champion champ2 = results.getMostPlayed().get(1);
+        Champion champ3 = results.getMostPlayed().get(2);
+        Top6_10.setText("MostPlayed:" + champ1.getName() + "<br>" + champ2.getName() + "<br>" + champ3.getName() +"<br>");
+
+        BufferedImage bufImg = null;
+        Image tmp = null;
+        try {
+            URL url = new URL("https:" + champ1.getPictureURL());
+            bufImg = ImageIO.read(url);
+            tmp = bufImg.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-    Top1_5.setText("<html> Rank" +  results.getSoloRank() + " <br> Solo Win Rate: " +  results.getSoloWinRate() + "<br>FLEX: " + results.getFlexRank()+ "<br>FlexWinRate :"+ results.getFlexWinRate() + "<br>MostPlayed:" + Champ + "<html>");
-
-
+        assert false;
+        Top6_10.setIcon(new ImageIcon(tmp));
 
     }
+
+    public String winRate(double winRate){
+        DecimalFormat df = new DecimalFormat("###.##");
+        return df.format(winRate * 100)+"%";
+    }
+
+
+
 }
