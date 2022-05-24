@@ -4,11 +4,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 
 // DAILY NOTICE: The following code is only to test JPanel format in GUI, no improve.
 public class GUIController implements ActionListener
@@ -33,7 +33,9 @@ public class GUIController implements ActionListener
     public void screenGUI()
     {
         JFrame frame = new JFrame("League.GG");
+        frame.setPreferredSize( new Dimension(500, 220));
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+
 
         JPanel searchPanel = new JPanel();
 
@@ -54,28 +56,24 @@ public class GUIController implements ActionListener
         title.add(titleLabel);
 
 
-        Top1_5 = new JLabel(); // api top 1 - 5
-        Top6_10 = new JLabel(); //api top 6 - 10
-
         JPanel topPlayers = new JPanel();
         GridLayout layout = new GridLayout(1,2);
         topPlayers.setLayout(layout);
         layout.setHgap(10);
-        JLabel demo = new JLabel("<html>1.  <br> 2. Quntao Zheng <br> 3. Qihong , <br> 4. player4 <br> 5. player5 <html>");
-        demo.setHorizontalAlignment(SwingConstants.CENTER);
-        JLabel demo2 = new JLabel("<html>6. <br> player6 <br> 7. player7 <br> 8. player8 <br> 9. player9 <br> 10. player10 <br> <html>");
-        demo2.setHorizontalAlignment(SwingConstants.CENTER);
-        topPlayers.add(demo);
-        topPlayers.add(demo2);
+        Top1_5 = new JLabel("<html>1.  <br> 2. Quntao Zheng <br> 3. Qihong , <br> 4. player4 <br> 5. player5 <html>");
+        Top1_5.setHorizontalAlignment(SwingConstants.CENTER);
+        Top6_10 = new JLabel("<html>6. <br> player6 <br> 7. player7 <br> 8. player8 <br> 9. player9 <br> 10. player10 <br> <html>");
+        Top6_10.setHorizontalAlignment(SwingConstants.CENTER);
+
+
         topPlayers.add(Top1_5);
         topPlayers.add(Top6_10);
 
-        JPanel playerInfo = new JPanel();
-
 
         frame.add(searchPanel, BorderLayout.NORTH);
-        frame.add(topPlayers, BorderLayout.SOUTH);
         frame.add(title, BorderLayout.CENTER);
+        frame.add(topPlayers, BorderLayout.SOUTH);
+
 
         submit.addActionListener(this);
         clear.addActionListener(this);
@@ -83,6 +81,7 @@ public class GUIController implements ActionListener
         frame.pack();
         frame.setVisible(true);
     }
+
 
 
 
@@ -107,11 +106,35 @@ public class GUIController implements ActionListener
     public void displayInfo(String Username) // call this method when submit is click ; add PARAMETERS !
     {
         results = client.getPlayer(Username);
-    Top1_5.setText(""+
-    results.getSoloRank());
-//    results.getSoloWinRate()+
-//    results.getFlexRank()+
-//    results.getFlexWinRate() +
-//    results.getMostPlayed());
+        ArrayList<Champion> championList = results.getMostPlayed();
+
+        Top1_5.setText("<html> Solo Rank: " + results.getSoloRank() + " <br> Solo Win Rate: " +  winRate(results.getSoloWinRate()) + "<br>Flex Rank: " + results.getFlexRank()+ "<br>Flex WinRate: "+ winRate(results.getFlexWinRate()) + "<br> <html>");
+        Champion champ1 = results.getMostPlayed().get(0);
+        Champion champ2 = results.getMostPlayed().get(1);
+        Champion champ3 = results.getMostPlayed().get(2);
+        Top6_10.setText("MostPlayed:" + champ1.getName() + "<br>" + champ2.getName() + "<br>" + champ3.getName() +"<br>");
+
+        BufferedImage bufImg = null;
+        Image tmp = null;
+        try {
+            URL url = new URL("https:" + champ1.getPictureURL());
+            bufImg = ImageIO.read(url);
+            tmp = bufImg.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert false;
+        Top6_10.setIcon(new ImageIcon(tmp));
+
     }
+
+    public String winRate(double winRate){
+        DecimalFormat df = new DecimalFormat("###.##");
+        return df.format(winRate * 100)+"%";
+    }
+
+
+
 }

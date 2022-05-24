@@ -13,7 +13,7 @@ public class LeagueOfLegendsClient {
     private String baseUrl;
 
     public LeagueOfLegendsClient(){
-        APIkey = "RGAPI-76a91ed0-ba79-4675-bc95-640a30c8cec1";
+        APIkey = "RGAPI-4cf8c2a5-ef4d-42de-9075-e22a7384bca0";
         baseUrl = "https://na1.api.riotgames.com/lol";
     }
 
@@ -70,7 +70,7 @@ public class LeagueOfLegendsClient {
         double flexWinRate;
         JSONArray jsonArray = new JSONArray(makeAPICall(url));
         JSONObject solo = jsonArray.getJSONObject(1);
-        JSONObject flex = jsonArray.getJSONObject(2);
+        JSONObject flex = jsonArray.getJSONObject(0);
         soloRank = solo.getString("tier") + " " + solo.getString("rank") + " " + solo.getInt("leaguePoints");
         flexRank = flex.getString("tier") + " " + flex.getString("rank") + " " + flex.getInt("leaguePoints");
         soloWinRate = (double)solo.getInt("wins") / (solo.getInt("wins") + solo.getInt("losses"));
