@@ -67,6 +67,8 @@ public class GUIController implements ActionListener
         demo2.setHorizontalAlignment(SwingConstants.CENTER);
         topPlayers.add(demo);
         topPlayers.add(demo2);
+        topPlayers.add(Top1_5);
+        topPlayers.add(Top6_10);
 
         JPanel playerInfo = new JPanel();
 
