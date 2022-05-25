@@ -20,8 +20,7 @@ public class LeagueOfLegendsClient {
     public String getID(String name){
         name = fixName(name);
         String endPoint = "/summoner/v4/summoners/by-name/" + name;
-        // String url = baseUrl + endPoint + "?api_key=" + APIkey;
-        String url = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + name + "?api_key=RGAPI-f2783ad4-c65b-45a3-b77e-c7c646fb0d52";
+         String url = baseUrl + endPoint + "?api_key=" + APIkey;
         JSONObject jsonObject = new JSONObject(makeAPICall(url));
         return jsonObject.getString("id");
     }

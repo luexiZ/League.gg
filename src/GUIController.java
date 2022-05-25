@@ -11,7 +11,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-// DAILY NOTICE: The following code is only to test JPanel format in GUI, no improve.
+// DAILY NOTICE:
 public class GUIController implements ActionListener
 {
     private JTextField userEntryField;
@@ -45,7 +45,9 @@ public class GUIController implements ActionListener
     public void screenGUI()
     {
         JFrame frame = new JFrame("League.GG");
-        frame.setPreferredSize( new Dimension(480, 220));
+        Image icon = Toolkit.getDefaultToolkit().getImage("src/icon.png");
+        frame.setIconImage(icon);
+        frame.setPreferredSize( new Dimension(1200, 700));
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 
 
@@ -72,10 +74,15 @@ public class GUIController implements ActionListener
         topPlayerPanel.setLayout(layout);
         bottomPanel.setLayout(card);
         layout.setHgap(10);
-        Top1_5 = new JLabel("Top 5 ");
+        ArrayList<String> topPlayer = client.parseTopPlayers();
+        Top1_5 = new JLabel("<html>1. " + topPlayer.get(0) + "<br> 2. " + topPlayer.get(1) + "<br> 3. " + topPlayer.get(2) + "<br> 4. "+ topPlayer.get(3) + "<br> 5. "+ topPlayer.get(4) + "<br> <html>");
         Top1_5.setHorizontalAlignment(SwingConstants.CENTER);
-        Top6_10 = new JLabel("<html>6. <br> player6 <br> 7. player7 <br> 8. player8 <br> 9. player9 <br> 10. player10 <br> <html>");
+        Top1_5.setFont(new Font("Serif",Font.BOLD, 25 ));
+        Top6_10 = new JLabel("<html>6. " + topPlayer.get(5) + "<br> 7. " + topPlayer.get(6) + "<br> 8. " + topPlayer.get(7) + "<br> 9. "+ topPlayer.get(8) + "<br> 10. "+ topPlayer.get(9) + "<br> <html>");
         Top6_10.setHorizontalAlignment(SwingConstants.CENTER);
+        Top6_10.setFont(new Font("Serif",Font.BOLD, 25 ));
+
+
 
 
         topPlayerPanel.add(Top1_5);
@@ -120,20 +127,42 @@ public class GUIController implements ActionListener
     public void displayInfo(String Username) // call this method when submit is click ; add PARAMETERS !
     {
         JPanel infoPanel = new JPanel();
+        GridLayout layout = new GridLayout(3, 2);
+        layout.setHgap(10);
+        infoPanel.setLayout(layout);
         player = client.getPlayer(Username);
         ArrayList<Champion> championList = player.getMostPlayed();
 
-        JLabel rankLabel = new JLabel("<html> Solo Rank: " + player.getSoloRank() + "      " +"                                   <br> Solo Win Rate: " +  winRate(player.getSoloWinRate()) + "<br>Flex Rank: " + player.getFlexRank()+ "<br>Flex WinRate: "+ winRate(player.getFlexWinRate()) + "<br> <html>");
-        Champion champ1 = player.getMostPlayed().get(0);
-        Champion champ2 = player.getMostPlayed().get(1);
-        Champion champ3 = player.getMostPlayed().get(2);
-        JLabel championsLabel = new JLabel("<html>Most Played: <br>" + champ1.getName() + " " + champ1.getPoints() + "<br>" + champ2.getName() + " " + champ2.getPoints() + "<br>" + champ3.getName() + " " + champ3.getPoints() +"<br> <html>");
-        postImage(player.getMostPlayed());
-        infoPanel.add(rankLabel, BorderLayout.WEST);
-        infoPanel.add(championsLabel, BorderLayout.EAST);
-        infoPanel.add(pictureLabel1);
-        infoPanel.add(pictureLabel2);
-        infoPanel.add(pictureLabel3);
+
+        Champion champ1 = championList.get(0);
+        Champion champ2 = championList.get(1);
+        Champion champ3 = championList.get(2);
+        ImageIcon rankSolo = new ImageIcon("src/" + player.getSoloTier() + ".png");
+        Image solo = rankSolo.getImage();
+        Image solo1 = solo.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+        rankSolo = new ImageIcon(solo1);
+        ImageIcon rankFlex = new ImageIcon("src/" + player.getFlexTier() + ".png");
+        JLabel rankLabel1 = new JLabel(/*<html>*/ "Ranked Solo/Duo" + /*"<br>"+*/ player.getSoloRank() /*+ "<br>"*/ + winRate(player.getSoloWinRate()) /*+ "<html>"*/, rankSolo, SwingConstants.LEFT);
+        JLabel rankLabel2 = new JLabel("<html> Flex SR :" + "<br>" + player.getFlexRank() + "<br>" + winRate(player.getFlexWinRate()) + "<html>");
+        JLabel placeholder = new JLabel();
+       // JLabel rankLabel3 = new JLabel("Ranked TFT: " + player.getSoloRank());
+        JLabel champLabel1 = new JLabel(champ1.getName() + "     Mastery Points: " + champ1.getPoints() , getImage(champ1.getPictureURL()), SwingConstants.LEFT);
+        JLabel champLabel2 = new JLabel(champ2.getName() + "     Mastery Points: " + champ2.getPoints(), getImage(champ2.getPictureURL()), SwingConstants.LEFT);
+        JLabel champLabel3 = new JLabel(champ3.getName() + "     Mastery Points: " + champ3.getPoints(), getImage(champ3.getPictureURL()), SwingConstants.LEFT);
+        rankLabel1.setFont(new Font("Serif",Font.BOLD, 20 ));
+        rankLabel2.setFont(new Font("Serif",Font.BOLD, 20 ));
+       // rankLabel3.setFont(new Font("Serif",Font.BOLD, 30 ));
+        champLabel1.setFont(new Font("Arial",Font.BOLD, 20 ));
+        champLabel2.setFont(new Font("Arial",Font.BOLD, 20 ));
+        champLabel3.setFont(new Font("Arial",Font.BOLD, 20 ));
+
+        infoPanel.add(rankLabel1);
+        infoPanel.add(champLabel1);
+        infoPanel.add(placeholder);
+        infoPanel.add(champLabel2);
+       // infoPanel.add(rankLabel3);
+        infoPanel.add(rankLabel2);
+        infoPanel.add(champLabel3);
         bottomPanel.add(infoPanel);
 
         card.next(bottomPanel);
@@ -141,44 +170,23 @@ public class GUIController implements ActionListener
 
     }
 
+    public ImageIcon getImage(String url){
+        ImageIcon imageIcon = null;
+        try {
+            URL imageURL = new URL(url);
+            BufferedImage image = ImageIO.read(imageURL);
+            imageIcon = new ImageIcon(image);
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return imageIcon;
+    }
+
     public String winRate(double winRate){
         DecimalFormat df = new DecimalFormat("###.##");
         return df.format(winRate * 100)+"%";
     }
-
-    public void postImage(ArrayList<Champion> champions)
-    {
-        for(int i = 0; i < champions.size(); i++)
-        {
-            BufferedImage bufImg = null;
-            Image tmp = null;
-            try {
-                URL url = new URL(champions.get(i).getPictureURL());
-                bufImg = ImageIO.read(url);
-                tmp = bufImg.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            assert false;
-            if(i == 0){
-                pictureLabel1.setIcon(new ImageIcon(tmp));
-            }
-            else if(i == 1){
-                pictureLabel2.setIcon(new ImageIcon(tmp));
-            }
-            else{
-                pictureLabel3.setIcon(new ImageIcon(tmp));
-            }
-        }
-    }
-
-//    public void topPlayer(){
-//        ArrayList<String> topPlayer = client.parseTopPlayers();
-//        for(int i = 0; i  topPlayer.size())
-//    }
-
 
 
 }

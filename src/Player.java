@@ -35,6 +35,14 @@ public class Player {
         return flexWinRate;
     }
 
+    public String getSoloTier(){
+        return soloRank.substring(0, soloRank.indexOf(" "));
+    }
+
+    public String getFlexTier(){
+        return flexRank.substring(0, flexRank.indexOf(" "));
+    }
+
     public ArrayList<Champion> getMostPlayed() {
         return mostPlayed;
     }
