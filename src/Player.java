@@ -2,17 +2,25 @@ import java.util.ArrayList;
 
 public class Player {
     private String soloRank;
+    private String soloTier;
     private String flexRank;
+    private String flexTier;
     private String rankURL;
-    private double soloWinRate;
-    private double flexWinRate;
+    private String soloWinLose;
+    private String soloWinRate;
+    private String flexWinLose;
+    private String flexWinRate;
     private ArrayList<Champion> mostPlayed;
 
-    public Player(String soloRank, String flexRank, String rankURL, double soloWinRate, double flexWinRate, ArrayList<Champion> mostPlayed) {
+    public Player(String soloRank, String soloTier, String flexRank, String flexTier, String rankURL, String soloWinLose, String soloWinRate, String flexWinlose, String flexWinRate, ArrayList<Champion> mostPlayed) {
         this.soloRank = soloRank;
+        this.soloTier = soloTier;
         this.flexRank = flexRank;
+        this.flexTier = flexTier;
         this.rankURL = rankURL;
+        this.soloWinLose = soloWinLose;
         this.soloWinRate = soloWinRate;
+        this.flexWinLose = flexWinlose;
         this.flexWinRate = flexWinRate;
         this.mostPlayed = mostPlayed;
     }
@@ -27,20 +35,28 @@ public class Player {
         return rankURL;
     }
 
-    public double getSoloWinRate() {
+    public String getSoloWinLose(){
+        return soloWinLose;
+    }
+
+    public String getFlexWinLose(){
+        return flexWinLose;
+    }
+
+    public String getSoloWinRate() {
         return soloWinRate;
     }
 
-    public double getFlexWinRate() {
+    public String getFlexWinRate() {
         return flexWinRate;
     }
 
     public String getSoloTier(){
-        return soloRank.substring(0, soloRank.indexOf(" "));
+        return soloTier;
     }
 
     public String getFlexTier(){
-        return flexRank.substring(0, flexRank.indexOf(" "));
+        return flexTier;
     }
 
     public ArrayList<Champion> getMostPlayed() {
