@@ -4,7 +4,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -13,30 +12,21 @@ public class LeagueOfLegendsClient {
     private String baseUrl;
 
     public LeagueOfLegendsClient(){
-        APIkey = "RGAPI-f2783ad4-c65b-45a3-b77e-c7c646fb0d52";
+        APIkey = "RGAPI-8385edac-58ac-4a94-a6bd-6c524344c546";
         baseUrl = "https://na1.api.riotgames.com/lol";
     }
 
-    public String getID(String name){
-        name = fixName(name);
-        String endPoint = "/summoner/v4/summoners/by-name/" + name;
-         String url = baseUrl + endPoint + "?api_key=" + APIkey;
-        JSONObject jsonObject = new JSONObject(makeAPICall(url));
-        return jsonObject.getString("id");
-    }
-
-
-    public ArrayList<Champion> parseJSONChampion(String name){
-        String summonerID = getID(name);
+    public ArrayList<Champion> parseJSONChampion(String summonerID){
         String endPoint = "/champion-mastery/v4/champion-masteries/by-summoner/" + summonerID;
-        String url = baseUrl + endPoint + "?api_key=" + APIkey;
-        String response = makeAPICall(url);
+        String champUrl = baseUrl + endPoint + "?api_key=" + APIkey;
+        String response = makeAPICall(champUrl);
+
         ArrayList<Champion> list = new ArrayList<>();
         JSONArray jsonArray = new JSONArray(response);
         for(int i = 0; i < 3; i++){
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             int id = jsonObject.getInt("championId");
-            int points = jsonObject.getInt("championPointsSinceLastLevel");
+            int points = jsonObject.getInt("championPoints");
             String championName = "";
             String pictureURL = "";
 
@@ -66,16 +56,13 @@ public class LeagueOfLegendsClient {
     public Player getPlayer(String name){
         String summonerID = getID(name);
         String endPoint = "/league/v4/entries/by-summoner/" + summonerID;
-        String url = baseUrl + endPoint + "?api_key=" + APIkey;
+        String playerUrl = baseUrl + endPoint + "?api_key=" + APIkey;
 
-        String soloRank;
-        String flexRank;
-        double soloWinRate;
-        double flexWinRate;
-        JSONArray jsonArray = new JSONArray(makeAPICall(url));
+
+        JSONArray jsonArray = new JSONArray(makeAPICall(playerUrl));
         JSONObject solo = null;
         JSONObject flex = null;
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < jsonArray.length(); i++)
         {
             if(jsonArray.getJSONObject(i).getString("queueType").equals("RANKED_SOLO_5x5"))
             {
@@ -86,17 +73,66 @@ public class LeagueOfLegendsClient {
                 flex = jsonArray.getJSONObject(i);
             }
         }
-
-        soloRank = solo.getString("tier") + " " + solo.getString("rank") + " " + solo.getInt("leaguePoints");
-        flexRank = flex.getString("tier") + " " + flex.getString("rank") + " " + flex.getInt("leaguePoints");
-        soloWinRate = (double)solo.getInt("wins") / (solo.getInt("wins") + solo.getInt("losses"));
-        flexWinRate = (double)flex.getInt("wins") / (flex.getInt("wins") + flex.getInt("losses"));
-        Player player = new Player(soloRank,flexRank, "pictureFile",soloWinRate,flexWinRate,parseJSONChampion(summonerID));
+        String soloRank = "Unranked";
+        String soloTier = "Unranked";
+        String flexRank = "Unranked";
+        String flexTier = "Unranked";
+        String soloWinLose = "";
+        String soloWinRate = "";
+        String flexWinLose = "";
+        String flexWinRate = "";
+        if(solo != null) {
+            soloRank = solo.getString("tier") + " " + solo.getString("rank") + " " + solo.getInt("leaguePoints");
+            soloTier = solo.getString("tier");
+            soloWinLose = solo.getInt("wins") + " W  " + solo.getInt("losses") + " L";
+            soloWinRate = round((double)solo.getInt("wins") / (solo.getInt("wins") + solo.getInt("losses")) * 100) + "%";
+        }
+        if(flex != null) {
+            flexRank = flex.getString("tier") + " " + flex.getString("rank") + " " + flex.getInt("leaguePoints");
+            flexTier = flex.getString("tier");
+            flexWinLose = flex.getInt("wins") + " W  " + flex.getInt("losses") + " L";
+            flexWinRate = round((double)flex.getInt("wins") / (flex.getInt("wins") + flex.getInt("losses")) * 100) + "%";
+        }
+        Player player = new Player(soloRank,soloTier, flexRank, flexTier, "",soloWinLose,soloWinRate,flexWinLose,flexWinRate,parseJSONChampion(summonerID));
         return player;
 
     }
 
-    private static String fixName(String name){
+
+    public ArrayList<String> parseTopPlayers() {
+        String endPoint = "/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5";
+        String url = baseUrl + endPoint + "?api_key=" + APIkey;
+        String response = makeAPICall(url);
+
+        ArrayList<String> topPlayers = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject(response);
+        JSONArray players = jsonObject. getJSONArray("entries");
+        JSONObject player = null;
+        int highestIdx = 0;
+        for (int i = 0; i < 10; i++) {
+            JSONObject highest = players.getJSONObject(0);
+            for (int j = 1; j < players.length(); j++) {
+                player = players.getJSONObject(j);
+                if (player.getInt("leaguePoints") > highest.getInt("leaguePoints")) {
+                    highest = player;
+                    highestIdx = j;
+                }
+            }
+            topPlayers.add(highest.getString("summonerName"));
+            players.remove(highestIdx);
+        }
+        return topPlayers;
+    }
+
+    private String getID(String name){
+        name = fixName(name);
+        String endPoint = "/summoner/v4/summoners/by-name/" + name;
+        String url = baseUrl + endPoint + "?api_key=" + APIkey;
+        JSONObject jsonObject = new JSONObject(makeAPICall(url));
+        return jsonObject.getString("id");
+    }
+
+    private String fixName(String name){
         String[] nameList = name.split("");
         for(int i = 0; i < nameList.length; i++){
             if(nameList[i].equals(" ")){
@@ -108,6 +144,10 @@ public class LeagueOfLegendsClient {
             result += str;
         }
         return result;
+    }
+
+    private double round(double num){
+        return Math.round(num * 100.0) / 100.0;
     }
 
     public static String makeAPICall(String url)
@@ -125,31 +165,6 @@ public class LeagueOfLegendsClient {
 
             return null;
         }
-    }
-
-    public ArrayList<String> parseTopPlayers() {
-        String endPoint = "/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5";
-        String url = baseUrl + endPoint + "?api_key=" + APIkey;
-        String response = makeAPICall(url);
-
-        ArrayList<String> topPlayers = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(response);
-        JSONArray players = jsonObject.getJSONArray("entries");
-        JSONObject player = null;
-        int highestIdx = 0;
-        for (int i = 0; i < 10; i++) {
-            JSONObject highest = players.getJSONObject(0);
-            for (int j = 1; j < players.length(); j++) {
-                player = players.getJSONObject(j);
-                if (player.getInt("leaguePoints") > highest.getInt("leaguePoints")) {
-                    highest = player;
-                    highestIdx = j;
-                }
-            }
-            topPlayers.add(highest.getString("summonerName"));
-            players.remove(highestIdx);
-        }
-        return topPlayers;
     }
 
 
