@@ -5,19 +5,21 @@ public class Player {
     private String soloTier;
     private String flexRank;
     private String flexTier;
-    private String rankURL;
+    private String tftRank;
+    private String tftTier;
     private String soloWinLose;
     private String soloWinRate;
     private String flexWinLose;
     private String flexWinRate;
     private ArrayList<Champion> mostPlayed;
 
-    public Player(String soloRank, String soloTier, String flexRank, String flexTier, String rankURL, String soloWinLose, String soloWinRate, String flexWinlose, String flexWinRate, ArrayList<Champion> mostPlayed) {
+    public Player(String soloRank, String soloTier, String flexRank, String flexTier, String tftRank, String tftTier, String soloWinLose, String soloWinRate, String flexWinlose, String flexWinRate, ArrayList<Champion> mostPlayed) {
         this.soloRank = soloRank;
         this.soloTier = soloTier;
         this.flexRank = flexRank;
         this.flexTier = flexTier;
-        this.rankURL = rankURL;
+        this.tftRank = tftRank;
+        this.tftTier = tftTier;
         this.soloWinLose = soloWinLose;
         this.soloWinRate = soloWinRate;
         this.flexWinLose = flexWinlose;
@@ -31,9 +33,11 @@ public class Player {
 
     public String getFlexRank(){return flexRank;}
 
-    public String getRankURL() {
-        return rankURL;
+    public String getTftRank() {
+        return tftRank;
     }
+
+    public String getTftTier(){return tftTier;}
 
     public String getSoloWinLose(){
         return soloWinLose;

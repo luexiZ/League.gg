@@ -13,11 +13,11 @@ public class LeagueOfLegendsClient {
 
     public LeagueOfLegendsClient(){
         APIkey = "RGAPI-8385edac-58ac-4a94-a6bd-6c524344c546";
-        baseUrl = "https://na1.api.riotgames.com/lol";
+        baseUrl = "https://na1.api.riotgames.com";
     }
 
     public ArrayList<Champion> parseJSONChampion(String summonerID){
-        String endPoint = "/champion-mastery/v4/champion-masteries/by-summoner/" + summonerID;
+        String endPoint = "/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerID;
         String champUrl = baseUrl + endPoint + "?api_key=" + APIkey;
         String response = makeAPICall(champUrl);
 
@@ -55,11 +55,11 @@ public class LeagueOfLegendsClient {
 
     public Player getPlayer(String name){
         String summonerID = getID(name);
-        String endPoint = "/league/v4/entries/by-summoner/" + summonerID;
+        String endPoint = "/lol/league/v4/entries/by-summoner/" + summonerID;
         String playerUrl = baseUrl + endPoint + "?api_key=" + APIkey;
+        String response = makeAPICall(playerUrl);
 
-
-        JSONArray jsonArray = new JSONArray(makeAPICall(playerUrl));
+        JSONArray jsonArray = new JSONArray(response);
         JSONObject solo = null;
         JSONObject flex = null;
         for(int i = 0; i < jsonArray.length(); i++)
@@ -77,6 +77,11 @@ public class LeagueOfLegendsClient {
         String soloTier = "Unranked";
         String flexRank = "Unranked";
         String flexTier = "Unranked";
+        String tftRank = getTFTRank(summonerID);
+        String tftTier = "Unranked";
+        if(!tftRank.equals("Unranked")){
+            tftTier = tftRank.substring(0, tftRank.indexOf(" "));
+        }
         String soloWinLose = "";
         String soloWinRate = "";
         String flexWinLose = "";
@@ -93,14 +98,14 @@ public class LeagueOfLegendsClient {
             flexWinLose = flex.getInt("wins") + " W  " + flex.getInt("losses") + " L";
             flexWinRate = round((double)flex.getInt("wins") / (flex.getInt("wins") + flex.getInt("losses")) * 100) + "%";
         }
-        Player player = new Player(soloRank,soloTier, flexRank, flexTier, "",soloWinLose,soloWinRate,flexWinLose,flexWinRate,parseJSONChampion(summonerID));
+        Player player = new Player(soloRank,soloTier, flexRank, flexTier, tftRank, tftTier, soloWinLose,soloWinRate,flexWinLose,flexWinRate,parseJSONChampion(summonerID));
         return player;
 
     }
 
 
     public ArrayList<String> parseTopPlayers() {
-        String endPoint = "/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5";
+        String endPoint = "/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5";
         String url = baseUrl + endPoint + "?api_key=" + APIkey;
         String response = makeAPICall(url);
 
@@ -126,10 +131,24 @@ public class LeagueOfLegendsClient {
 
     private String getID(String name){
         name = fixName(name);
-        String endPoint = "/summoner/v4/summoners/by-name/" + name;
+        String endPoint = "/lol/summoner/v4/summoners/by-name/" + name;
         String url = baseUrl + endPoint + "?api_key=" + APIkey;
         JSONObject jsonObject = new JSONObject(makeAPICall(url));
         return jsonObject.getString("id");
+    }
+
+    private String getTFTRank(String summonerID){
+        String endPoint = "/tft/league/v1/entries/by-summoner/";
+        String url = baseUrl + endPoint + summonerID + "?api_key=" + APIkey;
+        String response = makeAPICall(url);
+
+        String tftRank = "Unranked";
+        JSONArray arr = new JSONArray(response);
+        if(arr.length() != 0){
+            JSONObject info = arr.getJSONObject(0);
+            tftRank = info.getString("tier") + " " + info.getString("rank") + "" + info.getInt("leaguePoints");
+        }
+        return tftRank;
     }
 
     private String fixName(String name){
