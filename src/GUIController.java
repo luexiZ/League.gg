@@ -42,18 +42,14 @@ public class GUIController implements ActionListener
         frame.setLayout(boxLayout);
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 
-        JLabel title;
-        ImageIcon img = new ImageIcon("./src/Title.png");
-        Image logo = img.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
-        img = new ImageIcon(logo);
-        title = new JLabel("", img, JLabel.CENTER);
-
-
         JPanel searchPanel = new JPanel();
+        JLabel title = new JLabel("LEAGUE.GG");
         JLabel message = new JLabel("<html><i>Enter the UserName</i><html>");
         JButton submit = new JButton("Submit");
         JButton clear = new JButton("Clear");
+        title.setFont(new Font("Times New Roman",Font.ITALIC, 100));
         message.setFont(new Font("Monospaced",Font.BOLD, 25));
+        searchPanel.add(title);
         searchPanel.add(message);
         searchPanel.add(userEntryField);
         searchPanel.add(submit);
@@ -61,7 +57,7 @@ public class GUIController implements ActionListener
 
         JLabel titleLabel = new JLabel("<html> <i> Top Players </i> <html>");
         titlePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, titlePanel.getMinimumSize().height));
-        titleLabel.setFont(new Font("Monospaced",Font.BOLD, 100));
+        titleLabel.setFont(new Font("Monospaced",Font.BOLD, 70));
         titleLabel.setForeground(Color.BLACK);
         titlePanel.add(titleLabel);
 
