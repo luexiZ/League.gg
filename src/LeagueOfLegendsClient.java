@@ -12,7 +12,7 @@ public class LeagueOfLegendsClient {
     private String baseUrl;
 
     public LeagueOfLegendsClient(){
-        APIkey = "RGAPI-8385edac-58ac-4a94-a6bd-6c524344c546";
+        APIkey = "RGAPI-21c1b716-ec9a-4aee-95d4-8b9cec9170fb";
         baseUrl = "https://na1.api.riotgames.com";
     }
 

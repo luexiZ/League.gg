@@ -33,7 +33,7 @@ public class GUIController implements ActionListener
 
     }
 
-    public void screenGUI() throws IOException {
+    public void screenGUI(){
         JFrame frame = new JFrame("League.GG");
         Image icon = Toolkit.getDefaultToolkit().getImage("src/icon.png");
         frame.setIconImage(icon);
@@ -42,10 +42,12 @@ public class GUIController implements ActionListener
         frame.setLayout(boxLayout);
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 
-        JLabel background;
-        ImageIcon img = new ImageIcon("./src/Background.jpg");
-        background = new JLabel("", img, JLabel.CENTER);
-        background.setBounds(0,0,1200,700);
+        JLabel title;
+        ImageIcon img = new ImageIcon("./src/Title.png");
+        Image logo = img.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
+        img = new ImageIcon(logo);
+        title = new JLabel("", img, JLabel.CENTER);
+
 
         JPanel searchPanel = new JPanel();
         JLabel message = new JLabel("<html><i>Enter the UserName</i><html>");
@@ -89,7 +91,7 @@ public class GUIController implements ActionListener
         topPlayerPanel.add(Top6_10);
         bottomPanel.add(topPlayerPanel);
 
-
+        frame.add(title);
         frame.add(searchPanel);
         frame.add(titlePanel);
         frame.add(bottomPanel);
