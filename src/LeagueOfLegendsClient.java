@@ -12,7 +12,7 @@ public class LeagueOfLegendsClient {
     private String baseUrl;
 
     public LeagueOfLegendsClient(){
-        APIkey = "RGAPI-21c1b716-ec9a-4aee-95d4-8b9cec9170fb";
+        APIkey = "RGAPI-c76cbc75-b524-436a-8482-9d4e3042beca";
         baseUrl = "https://na1.api.riotgames.com";
     }
 
@@ -98,7 +98,7 @@ public class LeagueOfLegendsClient {
             flexWinLose = flex.getInt("wins") + " W  " + flex.getInt("losses") + " L";
             flexWinRate = round((double)flex.getInt("wins") / (flex.getInt("wins") + flex.getInt("losses")) * 100) + "%";
         }
-        Player player = new Player(soloRank,soloTier, flexRank, flexTier, tftRank, tftTier, soloWinLose,soloWinRate,flexWinLose,flexWinRate,parseJSONChampion(summonerID));
+        Player player = new Player(soloRank,soloTier, flexRank, flexTier, tftRank, tftTier, soloWinLose,soloWinRate,flexWinLose,flexWinRate,parseJSONChampion(summonerID), getIconUrl(name), getGameStatus(summonerID));
         return player;
 
     }
@@ -137,6 +137,16 @@ public class LeagueOfLegendsClient {
         return jsonObject.getString("id");
     }
 
+    private String getIconUrl(String name){
+        name = fixName(name);
+        String endPoint = "/lol/summoner/v4/summoners/by-name/" + name;
+        String url = baseUrl + endPoint + "?api_key=" + APIkey;
+        JSONObject jsonObject = new JSONObject(makeAPICall(url));
+        int iconId = jsonObject.getInt("profileIconId");
+        String iconUrl = "http://ddragon.leagueoflegends.com/cdn/12.10.1/img/profileicon/" + iconId + ".png";
+        return iconUrl;
+    }
+
     private String getTFTRank(String summonerID){
         String endPoint = "/tft/league/v1/entries/by-summoner/";
         String url = baseUrl + endPoint + summonerID + "?api_key=" + APIkey;
@@ -149,6 +159,30 @@ public class LeagueOfLegendsClient {
             tftRank = info.getString("tier") + " " + info.getString("rank") + " " + info.getInt("leaguePoints");
         }
         return tftRank;
+    }
+
+    public String getGameStatus(String summonerID){
+        String endPoint = "/lol/spectator/v4/active-games/by-summoner/";
+        String url = baseUrl + endPoint + summonerID + "?api_key=" + APIkey;
+        String response = makeAPICall(url);
+
+        String status = "IN GAME ";
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            String gameType = jsonObject.getString("gameMode");
+            if(gameType.equals("CLASSIC")){
+                status += "SUMMONER'S RIFT";
+            }
+            else{
+                status += jsonObject.getString("gameMode");
+            }
+        }
+        catch (Exception e){
+            if(e.getMessage().contains("not found")){
+                status = "NOT IN GAME";
+            }
+        }
+        return status;
     }
 
     private String fixName(String name){
