@@ -146,7 +146,7 @@ public class LeagueOfLegendsClient {
         JSONArray arr = new JSONArray(response);
         if(arr.length() != 0){
             JSONObject info = arr.getJSONObject(0);
-            tftRank = info.getString("tier") + " " + info.getString("rank") + "" + info.getInt("leaguePoints");
+            tftRank = info.getString("tier") + " " + info.getString("rank") + " " + info.getInt("leaguePoints");
         }
         return tftRank;
     }
