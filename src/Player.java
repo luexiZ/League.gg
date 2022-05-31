@@ -14,8 +14,10 @@ public class Player {
     private ArrayList<Champion> mostPlayed;
     private String iconUrl;
     private String liveStatus;
-
+ 
     public Player(String soloRank, String soloTier, String flexRank, String flexTier, String tftRank, String tftTier, String soloWinLose, String soloWinRate, String flexWinlose, String flexWinRate, ArrayList<Champion> mostPlayed, String iconUrl, String liveStatus) {
+ 
+ 
         this.soloRank = soloRank;
         this.soloTier = soloTier;
         this.flexRank = flexRank;

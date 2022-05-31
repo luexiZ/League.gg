@@ -44,10 +44,17 @@ public class GUIController implements ActionListener
         JFrame frame = new JFrame("League.GG");
         Image icon = Toolkit.getDefaultToolkit().getImage("src/icon.png");
         frame.setIconImage(icon);
+
         frame.setPreferredSize( new Dimension(1350, 1000)); // 1280 X 720 size
         BoxLayout boxLayout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS); // top to bottom
         frame.setLayout(boxLayout);
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+        //setUp for SearchPanel
+        JPanel searchPanel = new JPanel();
+        JLabel message = new JLabel("<html><i>Enter the UserName</i><html>"); // Instruction
+        JButton submit = new JButton("Submit");  // Sumbit Button
+        JButton clear = new JButton("Clear");  // Clear Button
+
 
         projectNamePanel = new JPanel();
         JLabel title;
@@ -70,6 +77,7 @@ public class GUIController implements ActionListener
         clear.setFont(new Font("Serif", Font.BOLD, 17));
         userEntryField.setFont(new Font("Serif", Font.BOLD, 30));
 
+
         searchPanel.add(message);
         searchPanel.add(userEntryField);
         searchPanel.add(submit);
@@ -78,6 +86,7 @@ public class GUIController implements ActionListener
             public void actionPerformed(ActionEvent e){
                 String UserName = userEntryField.getText();
                 displayInfo(UserName);
+
                 titlePanel.setVisible(false);
                 projectNamePanel.setVisible(false);
                 topPlayerPanel.setVisible(false);
@@ -94,22 +103,29 @@ public class GUIController implements ActionListener
         topPlayerPanel.setLayout(layout);
         layout.setHgap(10);
 
+
         // Calling Client (LeagueOfLegendsClient object) and parsing all top 10 player information, transferring it into JLabels
         ArrayList<String> topPlayer = client.parseTopPlayers();
         JLabel Top1_5 = new JLabel("<html>1. " + topPlayer.get(0) + "<br> 2. " + topPlayer.get(1) + "<br> 3. " + topPlayer.get(2) + "<br> 4. "+ topPlayer.get(3) + "<br> 5. "+ topPlayer.get(4) + "<br> <html>");
         JLabel Top6_10 = new JLabel("<html>6. " + topPlayer.get(5) + "<br> 7. " + topPlayer.get(6) + "<br> 8. " + topPlayer.get(7) + "<br> 9. "+ topPlayer.get(8) + "<br> 10. "+ topPlayer.get(9) + "<br> <html>");
         Top1_5.setHorizontalAlignment(SwingConstants.CENTER);
         Top6_10.setHorizontalAlignment(SwingConstants.CENTER);
+
         Top1_5.setForeground(new Color(102,167,197));
         Top6_10.setForeground(new Color(102,167,197));
         //Top6_10.setForeground(new Color(44,110,96));
+
+
         Top1_5.setFont(new Font("Serif",Font.ITALIC, 40));
         Top6_10.setFont(new Font("Serif",Font.ITALIC, 40));
         topPlayerPanel.add(Top1_5);
         topPlayerPanel.add(Top6_10);
         bottomPanel.setLayout(card);  // CardLayout to switch JPanels around
 
+
         frame.add(projectNamePanel);
+
+
         frame.add(searchPanel);
         frame.add(titlePanel);
         frame.add(topPlayerPanel);
@@ -132,6 +148,7 @@ public class GUIController implements ActionListener
         Champion champ1 = championList.get(0);
         Champion champ2 = championList.get(1);
         Champion champ3 = championList.get(2);
+
         ImageIcon soloImage = getFileImage("src/" + player.getSoloTier() + ".png");
         ImageIcon flexImage = getFileImage("src/" + player.getFlexTier() + ".png");
         ImageIcon tftImage = getFileImage("src/" + player.getTftTier() + ".png");
@@ -159,9 +176,11 @@ public class GUIController implements ActionListener
         rankLabel2.setForeground(new Color(195,141,158));
         rankLabel3.setForeground(new Color(92,189,149));
 
+
         champLabel1.setFont(new Font("Comic Sans MS",Font.BOLD, 25 ));
         champLabel2.setFont(new Font("Comic Sans MS",Font.BOLD, 25 ));
         champLabel3.setFont(new Font("Comic Sans MS",Font.BOLD, 25 ));
+
 
         champLabel1.setForeground(new Color(123,186,233));
         champLabel2.setForeground(new Color(210,105,30));
@@ -169,6 +188,8 @@ public class GUIController implements ActionListener
 
         infoPanel.add(profileLabel);
         infoPanel.add(placeholder);
+
+
         infoPanel.add(rankLabel1);
         infoPanel.add(champLabel1);
         infoPanel.add(rankLabel2);
@@ -177,9 +198,12 @@ public class GUIController implements ActionListener
         infoPanel.add(champLabel3);
 
         //panelCount prevent previous panel that gets created saves into bottomPanel
+
         if(panelCount != 1){
             bottomPanel.remove(0);
             panelCount = 1;
+
+
         }
         bottomPanel.add(infoPanel);
         card.next(bottomPanel); // flip to the next Panel
@@ -205,10 +229,13 @@ public class GUIController implements ActionListener
         {
             userEntryField.setText("");
             titlePanel.setVisible(true);
+
             projectNamePanel.setVisible(true);
             topPlayerPanel.setVisible(true);
             bottomPanel.remove(0);
             panelCount = 1;
+
+
         }
     }
 
