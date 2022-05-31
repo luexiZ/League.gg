@@ -51,7 +51,7 @@ public class GUIController implements ActionListener
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
         //setUp for SearchPanel
         JPanel searchPanel = new JPanel();
-        JLabel message = new JLabel("<html><i>Enter the UserName</i><html>"); // Instruction
+        JLabel message = new JLabel("<html><i>Search</i><html>"); // Instruction
         JButton submit = new JButton("Submit");  // Sumbit Button
         JButton clear = new JButton("Clear");  // Clear Button
 
@@ -64,18 +64,13 @@ public class GUIController implements ActionListener
         title = new JLabel("", img, SwingConstants.CENTER);
         projectNamePanel.add(title);
 
-        //setUp for SearchPanel; includes searchBar, text, and buttons
-        JPanel searchPanel = new JPanel();
-        JLabel message = new JLabel("<html><i>Search</i><html>"); // Instruction
-        JButton submit = new JButton("Submit");
-        JButton clear = new JButton("Clear");
 
-        message.setFont(new Font("Arial", Font.BOLD, 40));
-        submit.setFont(new Font("Serif", Font.BOLD, 17));
-        submit.setSize(30,25);
-        clear.setSize(30,25);
-        clear.setFont(new Font("Serif", Font.BOLD, 17));
-        userEntryField.setFont(new Font("Serif", Font.BOLD, 30));
+        message.setFont(new Font("Serif", Font.BOLD, 32));
+        submit.setFont(new Font("Serif", Font.BOLD, 20));
+        clear.setFont(new Font("Serif", Font.BOLD, 20));
+        submit.setForeground(new Color(102,167,197));
+        clear.setForeground(new Color(102,167,197));
+        userEntryField.setFont(new Font("Serif", Font.BOLD, 23));
 
 
         searchPanel.add(message);
@@ -102,8 +97,6 @@ public class GUIController implements ActionListener
         GridLayout layout = new GridLayout(1,2); // Creates a grid to space off JLabels
         topPlayerPanel.setLayout(layout);
         layout.setHgap(10);
-
-
         // Calling Client (LeagueOfLegendsClient object) and parsing all top 10 player information, transferring it into JLabels
         ArrayList<String> topPlayer = client.parseTopPlayers();
         JLabel Top1_5 = new JLabel("<html>1. " + topPlayer.get(0) + "<br> 2. " + topPlayer.get(1) + "<br> 3. " + topPlayer.get(2) + "<br> 4. "+ topPlayer.get(3) + "<br> 5. "+ topPlayer.get(4) + "<br> <html>");
@@ -113,7 +106,6 @@ public class GUIController implements ActionListener
 
         Top1_5.setForeground(new Color(102,167,197));
         Top6_10.setForeground(new Color(102,167,197));
-        //Top6_10.setForeground(new Color(44,110,96));
 
 
         Top1_5.setFont(new Font("Serif",Font.ITALIC, 40));
@@ -124,8 +116,6 @@ public class GUIController implements ActionListener
 
 
         frame.add(projectNamePanel);
-
-
         frame.add(searchPanel);
         frame.add(titlePanel);
         frame.add(topPlayerPanel);
@@ -202,8 +192,6 @@ public class GUIController implements ActionListener
         if(panelCount != 1){
             bottomPanel.remove(0);
             panelCount = 1;
-
-
         }
         bottomPanel.add(infoPanel);
         card.next(bottomPanel); // flip to the next Panel
