@@ -26,7 +26,7 @@ public class GUIController implements ActionListener
 
     public GUIController()
     {
-        userEntryField = new JTextField(20);
+        userEntryField = new JTextField(30);
         bottomPanel = new JPanel();
         titlePanel = new JPanel();
         projectNamePanel = new JPanel();
@@ -44,7 +44,7 @@ public class GUIController implements ActionListener
         JFrame frame = new JFrame("League.GG");
         Image icon = Toolkit.getDefaultToolkit().getImage("src/icon.png");
         frame.setIconImage(icon);
-        frame.setPreferredSize( new Dimension(1280, 720)); // 1280 X 720 size
+        frame.setPreferredSize( new Dimension(1350, 1000)); // 1280 X 720 size
         BoxLayout boxLayout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS); // top to bottom
         frame.setLayout(boxLayout);
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
@@ -52,20 +52,23 @@ public class GUIController implements ActionListener
         projectNamePanel = new JPanel();
         JLabel title;
         ImageIcon img = new ImageIcon("./src/title.png");
-        Image logo = img.getImage().getScaledInstance(350, 250, Image.SCALE_SMOOTH);
+        Image logo = img.getImage().getScaledInstance(850, 450, Image.SCALE_SMOOTH);
         img = new ImageIcon(logo);
         title = new JLabel("", img, SwingConstants.CENTER);
         projectNamePanel.add(title);
 
         //setUp for SearchPanel; includes searchBar, text, and buttons
         JPanel searchPanel = new JPanel();
-        JLabel message = new JLabel("<html><i>Enter the UserName</i><html>"); // Instruction
+        JLabel message = new JLabel("<html><i>Search</i><html>"); // Instruction
         JButton submit = new JButton("Submit");
         JButton clear = new JButton("Clear");
 
-        message.setFont(new Font("Serif", Font.BOLD, 20));
+        message.setFont(new Font("Arial", Font.BOLD, 40));
         submit.setFont(new Font("Serif", Font.BOLD, 17));
+        submit.setSize(30,25);
+        clear.setSize(30,25);
         clear.setFont(new Font("Serif", Font.BOLD, 17));
+        userEntryField.setFont(new Font("Serif", Font.BOLD, 30));
 
         searchPanel.add(message);
         searchPanel.add(userEntryField);
@@ -120,7 +123,7 @@ public class GUIController implements ActionListener
     public void displayInfo(String Username) // call this method when submit is click
     {
         JPanel infoPanel = new JPanel();
-        GridLayout layout = new GridLayout(3, 2);
+        GridLayout layout = new GridLayout(4, 2);
         layout.setHgap(10);
         infoPanel.setLayout(layout);
         player = client.getPlayer(Username);
@@ -129,15 +132,26 @@ public class GUIController implements ActionListener
         Champion champ1 = championList.get(0);
         Champion champ2 = championList.get(1);
         Champion champ3 = championList.get(2);
-        ImageIcon soloImage = getRankImage("src/" + player.getSoloTier() + ".png");
-        ImageIcon flexImage = getRankImage("src/" + player.getFlexTier() + ".png");
-        ImageIcon tftImage = getRankImage("src/" + player.getTftTier() + ".png");
+        ImageIcon soloImage = getFileImage("src/" + player.getSoloTier() + ".png");
+        ImageIcon flexImage = getFileImage("src/" + player.getFlexTier() + ".png");
+        ImageIcon tftImage = getFileImage("src/" + player.getTftTier() + ".png");
+        ImageIcon profileImage = getUrlImage(player.getIconUrl());
+
+        Image profile = profileImage.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        profileImage = new ImageIcon(profile);
+
+        JLabel profileLabel = new JLabel("<html>" + Username + "<br>" + "" + "<br>" + "" + "<br>" + player.getLiveStatus() + "<html>",profileImage, SwingConstants.LEFT);
+        JLabel placeholder = new JLabel("<html>" + "<br>" + "<br>" +"Most Played Champions" + "<html>");
         JLabel rankLabel1 = new JLabel("<html> RANKED SOLO/DUO" + "<br>"+ player.getSoloRank() + "<br>" + player.getSoloWinLose() + "  " + player.getSoloWinRate() + "<html>", soloImage, SwingConstants.LEFT);
         JLabel rankLabel2 = new JLabel("<html> RANKED FLEX SR" + "<br>" + player.getFlexRank() + "<br>" + player.getFlexWinLose() + "  " + player.getFlexWinRate() + "<html>", flexImage,SwingConstants.LEFT);
         JLabel rankLabel3 = new JLabel("<html> RANKED TFT" + "<br>" + player.getTftRank(), tftImage, SwingConstants.LEFT);
-        JLabel champLabel1 = new JLabel(champ1.getName() + "     Mastery Points: " + champ1.getPoints() , getChampionImage(champ1.getPictureURL()), SwingConstants.LEFT);
-        JLabel champLabel2 = new JLabel(champ2.getName() + "     Mastery Points: " + champ2.getPoints(), getChampionImage(champ2.getPictureURL()), SwingConstants.LEFT);
-        JLabel champLabel3 = new JLabel(champ3.getName() + "     Mastery Points: " + champ3.getPoints(), getChampionImage(champ3.getPictureURL()), SwingConstants.LEFT);
+        JLabel champLabel1 = new JLabel(champ1.getName() + "     Mastery Points: " + champ1.getPoints() , getUrlImage(champ1.getPictureURL()), SwingConstants.LEFT);
+        JLabel champLabel2 = new JLabel(champ2.getName() + "     Mastery Points: " + champ2.getPoints(), getUrlImage(champ2.getPictureURL()), SwingConstants.LEFT);
+        JLabel champLabel3 = new JLabel(champ3.getName() + "     Mastery Points: " + champ3.getPoints(), getUrlImage(champ3.getPictureURL()), SwingConstants.LEFT);
+
+        profileLabel.setFont(new Font("Comic Sans MS",Font.BOLD, 25 ));
+        placeholder.setFont(new Font("Comic Sans MS",Font.BOLD, 40 ));
+
         rankLabel1.setFont(new Font("Courier",Font.BOLD, 26  ));
         rankLabel2.setFont(new Font("Courier",Font.BOLD, 26 ));
         rankLabel3.setFont(new Font("Courier",Font.BOLD, 26 ));
@@ -153,6 +167,8 @@ public class GUIController implements ActionListener
         champLabel2.setForeground(new Color(210,105,30));
         champLabel3.setForeground(new Color(171,123,233));
 
+        infoPanel.add(profileLabel);
+        infoPanel.add(placeholder);
         infoPanel.add(rankLabel1);
         infoPanel.add(champLabel1);
         infoPanel.add(rankLabel2);
@@ -196,7 +212,7 @@ public class GUIController implements ActionListener
         }
     }
 
-    public ImageIcon getChampionImage(String url){
+    public ImageIcon getUrlImage(String url){
         ImageIcon imageIcon = null;
         try {
             URL imageURL = new URL(url);
@@ -209,7 +225,7 @@ public class GUIController implements ActionListener
         return imageIcon;
     }
 
-    public ImageIcon getRankImage(String file){
+    public ImageIcon getFileImage(String file){
         ImageIcon imageIcon = new ImageIcon(file);
         Image solo1 = imageIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(solo1);
